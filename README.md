@@ -60,3 +60,15 @@ Special thanks to;
 
 [Algolia](https://www.algolia.com/) for providing full-text search to the docs.
 
+
+
+## CI/CD 强制执行预算
+
+超时使用 GitHub 原生 Job/Step 限制，失败保留原退出语义。依赖安装通常限 3 分钟，网络、测试与构建步骤使用更短上限；每个 Job 的总上限如下。迁移、发布和人工操作继续遵守原授权条件。预算是等待保险丝，不代表慢测试已经根治；样本不足的操作需在下一次获授权运行中校准。
+
+| Workflow | Job | 总上限（分钟） |
+| --- | --- | --- |
+| `release.yml` | `build` | 15 |
+| `release.yml` | `release` | 10 |
+
+此 fork 的上游镜像/版本发布入口保持原触发条件；本次只补预算，不激活上游发布凭据或发布运行。
