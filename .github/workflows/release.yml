@@ -18,6 +18,7 @@ env:
 
 jobs:
   build:
+    timeout-minutes: 15
     strategy:
       matrix:
         include:
@@ -53,6 +54,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push by digest
+        timeout-minutes: 10
         id: build
         uses: docker/build-push-action@v6
         with:
@@ -80,6 +82,7 @@ jobs:
         run: echo "version=${VERSION#v}" >> "$GITHUB_OUTPUT"
         
       - name: Export Docker image
+        timeout-minutes: 3
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -92,6 +95,7 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.suffix }}
 
       - name: Compress image
+        timeout-minutes: 3
         run: gzip docmost-${{ matrix.suffix }}.docker.tar
 
       - name: Upload image archive
@@ -102,6 +106,7 @@ jobs:
           if-no-files-found: error
 
   release:
+    timeout-minutes: 10
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -132,6 +137,7 @@ jobs:
             type=raw,value=latest,enable=${{ !contains(env.VERSION, '-') }}
 
       - name: Create manifest list and push
+        timeout-minutes: 5
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
